@@ -97,10 +97,6 @@ function drawHeartbeat(data, color, label) {
     .attr("stroke-width", 1.8)
     .attr("d", line);
 
-  const length = path.node().getTotalLength();
-  path.attr("stroke-dasharray", length)
-    .attr("stroke-dashoffset", length);
-
   svg.append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(d3.axisBottom(x).ticks(5).tickSize(0))
@@ -748,6 +744,76 @@ function drawSlideChart(visibleSongs) {
   letter-spacing: 0.08em;
   text-align: center;
 }
+
+/* ── RESPONSIVE / MOBILE ── */
+@media (max-width: 768px) {
+
+  /* Section 1 */
+  .section-1 h1 {
+    font-size: clamp(1.8rem, 8vw, 3rem);
+  }
+
+  /* Section 2 */
+  .section-2-inner {
+    padding: 0 1rem;
+  }
+  .two-charts {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .two-charts svg {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .chart-wrapper {
+    width: 100%;
+  }
+
+  /* Section 3 — disable horizontal scroll, go vertical */
+  .section-3-wrapper {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .section-3-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .slide {
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: column !important;
+    padding: 3rem 1.5rem !important;
+    gap: 2rem !important;
+    min-height: 100vh;
+  }
+  .slide-chart {
+    width: 100% !important;
+    order: 2;
+  }
+  .slide-chart svg {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .slide-text {
+    order: 1;
+    max-width: 100% !important;
+  }
+
+  /* Section 4 */
+  .s4-card {
+    padding: 2rem 1.5rem !important;
+  }
+  .s4-card h2 {
+    font-size: clamp(1.4rem, 6vw, 2.5rem) !important;
+  }
+
+  /* Section 5 */
+  .section-5 {
+    padding: 4rem 1.5rem 6rem !important;
+  }
+}
 </style>
 ```
 
@@ -879,6 +945,7 @@ function drawSlideChart(visibleSongs) {
 ```
 
 ```js
+```js
 setTimeout(() => {
   const container = document.getElementById("two-charts");
   if (!container || container.children.length > 0) return;
@@ -903,7 +970,6 @@ setTimeout(() => {
   container.appendChild(b2);
 }, 600);
 ```
-
 ```js
 setTimeout(() => {
   const slideConfigs = [
@@ -922,52 +988,54 @@ setTimeout(() => {
   });
 }, 600);
 ```
-
 ```js
 gsap.registerPlugin(ScrollTrigger);
 
 setTimeout(() => {
 
-  const wrapper = document.querySelector("#js-wrapper");
-  const container = document.querySelector("#js-slideContainer");
+  // Horizontal scroll — desktop only
+  if (window.innerWidth > 768) {
+    const wrapper = document.querySelector("#js-wrapper");
+    const container = document.querySelector("#js-slideContainer");
 
-  if (wrapper && container) {
-    const totalScroll = container.scrollWidth - window.innerWidth;
-    gsap.to(container, {
-      x: -totalScroll,
-      ease: "none",
-      scrollTrigger: {
-        trigger: wrapper,
-        pin: true,
-        scrub: 1,
-        start: "top top",
-        end: "+=" + totalScroll
-      }
-    });
+    if (wrapper && container) {
+      const totalScroll = container.scrollWidth - window.innerWidth;
+      gsap.to(container, {
+        x: -totalScroll,
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrapper,
+          pin: true,
+          scrub: 1,
+          start: "top top",
+          end: "+=" + totalScroll
+        }
+      });
+    }
   }
 
- const s4cards = document.querySelectorAll(".s4-card");
+  // Section 4 cards — always
+  const s4cards = document.querySelectorAll(".s4-card");
 
-s4cards.forEach((card, i) => {
-  // Fade in on enter
-  ScrollTrigger.create({
-    trigger: card,
-    start: "top 75%",
-    onEnter: () => gsap.to(card, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }),
-    onLeaveBack: () => gsap.to(card, { opacity: 0, y: 50, duration: 0.5, ease: "power2.in" })
-  });
-
-  // Fade out on leave (except last)
-  if (i < s4cards.length - 1) {
+  s4cards.forEach((card, i) => {
     ScrollTrigger.create({
       trigger: card,
-      start: "bottom 25%",
-      onEnter: () => gsap.to(card, { opacity: 0, y: -60, scale: 0.95, duration: 0.5, ease: "power2.in" }),
-      onLeaveBack: () => gsap.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" })
+      start: "top 75%",
+      onEnter: () => gsap.to(card, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }),
+      onLeaveBack: () => gsap.to(card, { opacity: 0, y: 50, duration: 0.5, ease: "power2.in" })
     });
-  }
-});
 
+    if (i < s4cards.length - 1) {
+      ScrollTrigger.create({
+        trigger: card,
+        start: "bottom 25%",
+        onEnter: () => gsap.to(card, { opacity: 0, y: -60, scale: 0.95, duration: 0.5, ease: "power2.in" }),
+        onLeaveBack: () => gsap.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" })
+      });
+    }
+  });
+
+  // Section 2 fade in — always
   gsap.fromTo(".section-2-inner",
     { opacity: 0, y: 40 },
     {
@@ -979,22 +1047,6 @@ s4cards.forEach((card, i) => {
       }
     }
   );
-
-  document.querySelectorAll(".section-2 path[stroke]").forEach(path => {
-    try {
-      const length = path.getTotalLength();
-      path.style.strokeDasharray = length;
-      path.style.strokeDashoffset = length;
-      ScrollTrigger.create({
-        trigger: path.closest("svg"),
-        start: "top 85%",
-        onEnter: () => {
-          path.style.transition = "stroke-dashoffset 1.8s ease-in-out";
-          path.style.strokeDashoffset = "0";
-        }
-      });
-    } catch(e) {}
-  });
 
 }, 800);
 ```
