@@ -945,7 +945,6 @@ function drawSlideChart(visibleSongs) {
 ```
 
 ```js
-```js
 setTimeout(() => {
   const container = document.getElementById("two-charts");
   if (!container || container.children.length > 0) return;
