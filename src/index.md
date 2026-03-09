@@ -24,14 +24,6 @@ const colorMap = {
   "Holiyaan": "#9b5de5"
 };
 
-const opacityMap = {
-  "Rang Barse": 1,
-  "Holi Khele Raghuveera": 0.8,
-  "Balam Pichkari": 0.8,
-  "Do Me A Favour": 0.6,
-  "Holiyaan": 0.6
-};
-
 const long = web.flatMap(row => {
   const date = new Date(row.Time);
   return songs.map(s => ({
@@ -55,13 +47,18 @@ const rangBarseAll = long
 
 ```js
 function drawHeartbeat(data, color, label) {
-  const width = 360;
+  const isMobile = window.innerWidth <= 768;
+  const width = isMobile ? Math.min(window.innerWidth - 40, 340) : 360;
   const height = 220;
   const margin = {top: 30, right: 20, bottom: 35, left: 40};
 
   const svg = d3.create("svg")
     .attr("width", width)
     .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto")
     .style("background", "#ffffff")
     .style("border-radius", "4px");
 
@@ -90,7 +87,7 @@ function drawHeartbeat(data, color, label) {
     .y(d => y(d.interest))
     .curve(d3.curveMonotoneX);
 
-  const path = svg.append("path")
+  svg.append("path")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", color)
@@ -106,7 +103,7 @@ function drawHeartbeat(data, color, label) {
 
   svg.append("g")
     .attr("transform", `translate(${margin.left},0)`)
-    .call(d3.axisLeft(y).ticks(4).tickSize(-width + margin.left + margin.right))
+    .call(d3.axisLeft(y).ticks(4).tickSize(-(width - margin.left - margin.right)))
     .call(g => g.selectAll("text").style("fill", "#aaa").style("font-size", "10px"))
     .call(g => g.select(".domain").remove())
     .call(g => g.selectAll(".tick line").attr("stroke", "#f0f0f0").attr("stroke-dasharray", "2,2"));
@@ -127,8 +124,9 @@ function drawHeartbeat(data, color, label) {
 
 ```js
 function drawSlideChart(visibleSongs) {
-  const width = 480;
-  const height = 340;
+  const isMobile = window.innerWidth <= 768;
+  const width = isMobile ? Math.min(window.innerWidth - 40, 340) : 480;
+  const height = isMobile ? 260 : 340;
   const margin = {top: 30, right: 30, bottom: 45, left: 45};
 
   const filtered = long.filter(d => visibleSongs.includes(d.song));
@@ -142,6 +140,10 @@ function drawSlideChart(visibleSongs) {
   const svg = d3.create("svg")
     .attr("width", width)
     .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%")
+    .style("height", "auto")
     .style("background", "#ffffff")
     .style("overflow", "visible");
 
@@ -306,7 +308,6 @@ function drawSlideChart(visibleSongs) {
       const xDate = x.invert(xPos);
 
       cursorLine.attr("x1", xPos).attr("x2", xPos).attr("opacity", 1);
-
       svg.selectAll(".song-line").attr("opacity", 0.04);
       svg.selectAll(".song-area").attr("opacity", 0.01);
 
@@ -431,7 +432,7 @@ function drawSlideChart(visibleSongs) {
     margin-bottom: 1.5rem;
   }
 
-  .section-1 h1 .gradient-text {
+  .gradient-text {
     background: linear-gradient(90deg, #e63946, #f4a261, #f9c74f, #43aa8b, #9b5de5);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -487,15 +488,6 @@ function drawSlideChart(visibleSongs) {
     color: #111;
     line-height: 1.25;
     margin-bottom: 0.5rem;
-    text-align: center;
-    width: 100%;
-  }
-
-  .section-2-title .gradient-text {
-    background: linear-gradient(90deg, #e63946, #f4a261, #f9c74f, #43aa8b, #9b5de5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
   }
 
   .section-2-subtitle {
@@ -512,14 +504,16 @@ function drawSlideChart(visibleSongs) {
     gap: 3rem;
     justify-content: center;
     align-items: flex-start;
-    margin-top: 3rem;
+    margin-top: 1rem;
+    width: 100%;
   }
 
   .chart-block {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 360px;
+    flex: 1;
+    max-width: 380px;
   }
 
   .chart-block svg {
@@ -592,13 +586,6 @@ function drawSlideChart(visibleSongs) {
     font-weight: 700;
   }
 
-  .slide-title .gradient-text {
-    background: linear-gradient(90deg, #e63946, #f4a261, #f9c74f, #43aa8b, #9b5de5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
   .slide-body {
     font-size: 0.9rem;
     color: #888;
@@ -618,7 +605,6 @@ function drawSlideChart(visibleSongs) {
     align-items: center;
     text-align: center;
     padding: 4rem 2rem;
-    max-width: 100%;
     position: sticky;
     top: 0;
     opacity: 0;
@@ -643,13 +629,6 @@ function drawSlideChart(visibleSongs) {
     margin-bottom: 0.8rem;
   }
 
-  .s4-statement .gradient-text {
-    background: linear-gradient(90deg, #e63946, #f4a261, #f9c74f, #43aa8b, #9b5de5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
   .s4-quote {
     font-size: clamp(1.1rem, 2.5vw, 1.7rem);
     font-style: italic;
@@ -670,150 +649,149 @@ function drawSlideChart(visibleSongs) {
     letter-spacing: 0.05em;
   }
 
-  /* ── SECTION 5 — METHODOLOGY ── */
-.section-5 {
-  background: #ffffff;
-  padding: 6rem 2rem 8rem;
-  border-top: 1px solid #f0f0f0;
-}
-
-.section-5-inner {
-  max-width: 680px;
-  margin: 0 auto;
-}
-
-.s5-scroll-hint {
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #ccc;
-  text-align: center;
-  margin-bottom: 4rem;
-}
-
-.s5-divider {
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, #e63946, #9b5de5);
-  margin: 0 auto 4rem;
-}
-
-.s5-heading {
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #bbb;
-  margin-bottom: 0.8rem;
-  margin-top: 2.5rem;
-}
-
-.s5-body {
-  font-size: 0.9rem;
-  color: #888;
-  line-height: 1.9;
-  margin-bottom: 1rem;
-}
-
-.s5-songs {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.s5-song {
-  font-size: 0.9rem;
-  color: #666;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  line-height: 1.6;
-}
-
-.s5-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.s5-credit {
-  margin-top: 3rem;
-  font-size: 0.75rem;
-  color: #ccc;
-  letter-spacing: 0.08em;
-  text-align: center;
-}
-
-/* ── RESPONSIVE / MOBILE ── */
-@media (max-width: 768px) {
-
-  /* Section 1 */
-  .section-1 h1 {
-    font-size: clamp(1.8rem, 8vw, 3rem);
-  }
-
-  /* Section 2 */
-  .section-2-inner {
-    padding: 0 1rem;
-  }
-  .two-charts {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .two-charts svg {
-    width: 100% !important;
-    height: auto !important;
-  }
-  .chart-wrapper {
-    width: 100%;
-  }
-
-  /* Section 3 — disable horizontal scroll, go vertical */
-  .section-3-wrapper {
-    height: auto !important;
-    overflow: visible !important;
-  }
-  .section-3-inner {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    height: auto !important;
-  }
-  .slide {
-    width: 100% !important;
-    height: auto !important;
-    flex-direction: column !important;
-    padding: 3rem 1.5rem !important;
-    gap: 2rem !important;
-    min-height: 100vh;
-  }
-  .slide-chart {
-    width: 100% !important;
-    order: 2;
-  }
-  .slide-chart svg {
-    width: 100% !important;
-    height: auto !important;
-  }
-  .slide-text {
-    order: 1;
-    max-width: 100% !important;
-  }
-
-  /* Section 4 */
-  .s4-card {
-    padding: 2rem 1.5rem !important;
-  }
-  .s4-card h2 {
-    font-size: clamp(1.4rem, 6vw, 2.5rem) !important;
-  }
-
-  /* Section 5 */
   .section-5 {
-    padding: 4rem 1.5rem 6rem !important;
+    background: #ffffff;
+    padding: 6rem 2rem 8rem;
+    border-top: 1px solid #f0f0f0;
   }
-}
+
+  .section-5-inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .s5-scroll-hint {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ccc;
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .s5-divider {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, #e63946, #9b5de5);
+    margin: 0 auto 4rem;
+  }
+
+  .s5-heading {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 0.8rem;
+    margin-top: 2.5rem;
+  }
+
+  .s5-body {
+    font-size: 0.9rem;
+    color: #888;
+    line-height: 1.9;
+    margin-bottom: 1rem;
+  }
+
+  .s5-songs {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .s5-song {
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    line-height: 1.6;
+  }
+
+  .s5-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .s5-credit {
+    margin-top: 3rem;
+    font-size: 0.75rem;
+    color: #ccc;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .section-1 h1 {
+      font-size: clamp(1.8rem, 8vw, 3rem);
+    }
+
+    .section-2 {
+      padding: 4rem 1.2rem;
+    }
+
+    .two-charts {
+      flex-direction: column;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .chart-block {
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .section-3-wrapper {
+      height: auto !important;
+      overflow: visible !important;
+    }
+
+    .section-3-inner {
+      flex-direction: column !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .slide {
+      width: 100% !important;
+      height: auto !important;
+      flex-direction: column !important;
+      padding: 3rem 1.5rem !important;
+      gap: 2rem !important;
+      min-height: 100vh;
+      border-right: none !important;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .slide-chart {
+      width: 100% !important;
+      order: 2;
+    }
+
+    .slide-text {
+      order: 1;
+      max-width: 100% !important;
+    }
+
+    .s4-card {
+      padding: 3rem 1.5rem !important;
+    }
+
+    .s4-statement {
+      font-size: clamp(1.3rem, 6vw, 2rem) !important;
+    }
+
+    .s4-quote {
+      font-size: clamp(1rem, 4vw, 1.3rem) !important;
+    }
+
+    .section-5 {
+      padding: 4rem 1.5rem 6rem !important;
+    }
+  }
 </style>
 ```
 
@@ -834,7 +812,7 @@ function drawSlideChart(visibleSongs) {
   <div class="section-2-inner">
     <p class="section-label">A Global Phenomenon</p>
     <h2 class="section-2-title">Music is how we <span class="gradient-text">Decorate Time.</span></h2>
-    <p class="section-2-subtitle">Some songs beccome the festival. When Mariah Carey recorded All I Want For Christmas Is You in four days in 1994. She did not know she was writing a law. Rang Barse came out in 1981, a film song, disposable by design. It outlasted the film, the decade, the century. The spike arrives every year not because anyone decided to play these songs, but because nobody decided not to. That is the difference between a hit and a deeply rooted cultural memory.</p>
+    <p class="section-2-subtitle">Some songs become the festival. Mariah Carey recorded All I Want For Christmas Is You in four days in 1994. She did not know she was writing a law. Rang Barse came out in 1981, a film song, disposable by design. It outlasted the film, the decade, the century. The spike arrives every year not because anyone decided to play these songs, but because nobody decided not to. That is the difference between a hit and a deeply rooted cultural memory.</p>
     <div class="two-charts" id="two-charts"></div>
     <p class="section-2-caption">Google Trends search interest · Left: Worldwide · Right: India</p>
   </div>
@@ -913,22 +891,20 @@ function drawSlideChart(visibleSongs) {
 
 </section>
 
+<!-- SECTION 5 -->
 <section class="section-5">
   <div class="section-5-inner">
 
-    <div class="s5-scroll-hint">
-      ↑ Scroll back up to experience the story
-    </div>
-
+    <div class="s5-scroll-hint">↑ Scroll back up to experience the story</div>
     <div class="s5-divider"></div>
 
     <h3 class="s5-heading">About this story</h3>
-    <p class="s5-body">This piece explores Google Trends search interest data for five Bollywood Holi songs from 2004 to 2025, alongside Mariah Carey's All I Want For Christmas Is You as a global reference point for how festivals fossilize music.</p>
+    <p class="s5-body">This piece explores Google Trends search interest data for four Bollywood Holi songs from 2004 to 2025, alongside Mariah Carey's All I Want For Christmas Is You as a global reference point for how festivals fossilize music.</p>
 
     <h3 class="s5-heading">Data & Methodology</h3>
     <p class="s5-body">Search interest data was collected from Google Trends in March 2026. Data begins in 2004 because that is the earliest date for which Google Trends provides reliable monthly data. All values are normalised on a scale of 0–100, where 100 represents the peak search interest for that query over the selected period.</p>
-    <p class="s5-body">Songs were selected based on being explicitly Holi-themed Bollywood tracks released across different decades representing a mix of enduring classics and new challengers. The comparison query was run as a combined search to preserve relative normalisation across all five songs.</p>
-    <p class="s5-body">Mariah Carey data was collected as a separate worldwide query and is used for narrative framing only it is not directly comparable to the India-specific Holi data.</p>
+    <p class="s5-body">Songs were selected based on being explicitly Holi-themed Bollywood tracks released across different decades — representing a mix of enduring classics and new challengers. The comparison query was run as a combined search to preserve relative normalisation across all four songs.</p>
+    <p class="s5-body">Mariah Carey data was collected as a separate worldwide query and is used for narrative framing only — it is not directly comparable to the India-specific Holi data.</p>
 
     <h3 class="s5-heading">Songs in this story</h3>
     <div class="s5-songs">
@@ -945,6 +921,7 @@ function drawSlideChart(visibleSongs) {
 ```
 
 ```js
+// Inject Section 2 heartbeat charts
 setTimeout(() => {
   const container = document.getElementById("two-charts");
   if (!container || container.children.length > 0) return;
@@ -969,7 +946,9 @@ setTimeout(() => {
   container.appendChild(b2);
 }, 600);
 ```
+
 ```js
+// Inject Section 3 slide charts
 setTimeout(() => {
   const slideConfigs = [
     ["Rang Barse"],
@@ -987,6 +966,7 @@ setTimeout(() => {
   });
 }, 600);
 ```
+
 ```js
 gsap.registerPlugin(ScrollTrigger);
 
@@ -1013,7 +993,7 @@ setTimeout(() => {
     }
   }
 
-  // Section 4 cards — always
+  // Section 4 cards
   const s4cards = document.querySelectorAll(".s4-card");
 
   s4cards.forEach((card, i) => {
@@ -1034,7 +1014,7 @@ setTimeout(() => {
     }
   });
 
-  // Section 2 fade in — always
+  // Section 2 fade in
   gsap.fromTo(".section-2-inner",
     { opacity: 0, y: 40 },
     {
