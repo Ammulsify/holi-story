@@ -869,7 +869,6 @@ function drawSlideChart(visibleSongs) {
       <div class="s5-song"><span class="s5-dot" style="background:#e63946"></span><strong>Rang Barse</strong> — Silsila (1981)</div>
       <div class="s5-song"><span class="s5-dot" style="background:#f4a261"></span><strong>Holi Khele Raghuveera</strong> — Baghban (2003)</div>
       <div class="s5-song"><span class="s5-dot" style="background:#2a9d8f"></span><strong>Balam Pichkari</strong> — Yeh Jawaani Hai Deewani (2013)</div>
-      <div class="s5-song"><span class="s5-dot" style="background:#457b9d"></span><strong>Do Me A Favour Let's Play Holi</strong> — Waqt (2005)</div>
       <div class="s5-song"><span class="s5-dot" style="background:#9b5de5"></span><strong>Holiyaan</strong> — Dream Girl 2 (2024)</div>
     </div>
 
